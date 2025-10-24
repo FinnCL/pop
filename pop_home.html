@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PopRápido</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        html {
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body {
+            background: #000;
+            width: 414px;
+            height: 90vh;
+            max-height: 896px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            border-radius: 45px;
+            overflow: hidden;
+            position: relative;
+            border: 12px solid #2a2a2a;
+            padding: 0;
+            margin: 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: #333;
+            border-radius: 10px;
+            z-index: 999;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #EFEFEF;
+            border-radius: 33px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+            box-sizing: border-box;
+        }
+
+        .content-wrapper::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: #C83E3E;
+            padding: 26px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 33px 33px 0 0;
+            z-index: 200;
+        }
+
+        .user-circle {
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .user-circle img {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: high-quality;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .logo-bars {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .logo-text {
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-circle {
+            width: 26px;
+            height: 26px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .icon-circle:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #FF3B30;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Notifications Modal */
+        .notifications-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 9999;
+            border-radius: 33px;
+            padding-top: 80px;
+        }
+
+        .notifications-modal.active {
+            display: flex;
+        }
+
+        .notifications-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 380px;
+            max-height: 70vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 16px;
+            border-bottom: 2px solid #F0F0F0;
+        }
+
+        .notifications-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-notifications {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #F5F5F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .close-notifications:hover {
+            background: #E0E0E0;
+        }
+
+        .notifications-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .notifications-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb {
+            background: #CCC;
+            border-radius: 4px;
+        }
+
+        .notification-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: #FAFAFA;
+        }
+
+        .notification-item.unread {
+            background: #FFF9F5;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .icon-transaction {
+            background: #E8F5E9;
+        }
+
+        .icon-budget {
+            background: #FFF3E0;
+        }
+
+        .icon-goal {
+            background: #E3F2FD;
+        }
+
+        .icon-warning {
+            background: #FFEBEE;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #C83E3E;
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .notifications-footer {
+            padding: 12px 16px;
+            border-top: 2px solid #F0F0F0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .mark-all-read {
+            flex: 1;
+            padding: 10px;
+            background: white;
+            color: #C83E3E;
+            border: 2px solid #C83E3E;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mark-all-read:hover {
+            background: #FFF5F5;
+        }
+
+        .view-all-notifications {
+            flex: 1;
+            padding: 10px;
+            background: #C83E3E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .view-all-notifications:hover {
+            background: #B33636;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .balance-card {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.25s; }
+        .card:nth-child(5) { animation-delay: 0.3s; }
+        .card:nth-child(6) { animation-delay: 0.35s; }
+        .card:nth-child(7) { animation-delay: 0.4s; }
+        .card:nth-child(8) { animation-delay: 0.45s; }
+        .card:nth-child(9) { animation-delay: 0.5s; }
+
+        .health-card {
+            animation: fadeInUp 0.65s ease-out;
+        }
+
+        .transactions {
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        /* Loading Animation */
+        .loader-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #EFEFEF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            border-radius: 33px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .phone-screen {
+            position: relative;
+        }
+
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .loader-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #C83E3E;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loader-bars {
+            font-size: 36px;
+            font-weight: 300;
+        }
+
+        .loader-text {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .loader-dots {
+            color: #C83E3E;
+            font-size: 20px;
+            letter-spacing: 2px;
+            animation: blink 1.4s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(0.95);
+            }
+        }
+
+        @keyframes blink {
+            0%, 20% { opacity: 0; }
+            40% { opacity: 1; }
+            60%, 100% { opacity: 0; }
+        }
+
+
+        /* Balance Card */
+        .balance-card {
+            background: white;
+            margin: 10px 12px;
+            padding: 18px 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .balance-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .balance-label {
+            color: #7D7D7D;
+            font-size: 11px;
+            margin-bottom: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 600;
+            color: #000;
+            margin: 4px 0;
+        }
+
+        .balance-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .extrato-link {
+            color: #C83E3E;
+            font-size: 11px;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .arrow {
+            font-size: 16px;
+        }
+
+        /* Section Title */
+        .section-title {
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #000;
+            margin: 12px 0 8px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Functions Grid */
+        .grid {
+            padding: 0 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .card {
+            background: white;
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .card:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .card-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .card-text {
+            font-size: 9px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .card-wide {
+            grid-column: 1 / -1;
+            background: #4CAF50;
+            color: white;
+            padding: 14px 10px;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .card-wide:hover {
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+
+        .card-wide .card-icon {
+            font-size: 24px;
+        }
+
+        .card-wide .card-text {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Health Card */
+        .health-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 10px;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .health-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+        }
+
+        .health-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .health-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .health-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .health-score {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+
+        .health-preview {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .health-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .health-tips {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .health-arrow {
+            font-size: 14px;
+        }
+
+        /* Transactions */
+        .transactions {
+            padding: 8px 12px;
+            margin-bottom: 20px;
+        }
+
+        .transactions-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .empty-text {
+            color: #999;
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+
+        .view-all {
+            color: #C83E3E;
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .view-all:hover {
+            background: rgba(200, 62, 62, 0.1);
+            transform: translateX(3px);
+        }
+
+        .view-all:active {
+            transform: translateX(1px);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #C83E3E;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 10px 0;
+            border-radius: 0 0 33px 33px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 8px;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .nav-item.active {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <!-- Loading Animation -->
+    <div class="loader-wrapper" id="loader">
+        <div class="loader">
+            <div class="loader-logo">
+                <span class="loader-bars">≡</span>
+                <span class="loader-text">PopRápido</span>
+            </div>
+            <div class="loader-dots">•••</div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+    <!-- Header -->
+    <div class="header">
+        <a href="pop_perfil.html" class="user-circle" style="text-decoration: none; overflow: hidden;">
+            <img src="finn_avatar.jpg" alt="Finn" style="width: 100%; height: 100%; object-fit: cover;">
+        </a>
+        <div class="logo">
+            <span class="logo-bars">≡</span>
+            <span class="logo-text">PopRápido</span>
+        </div>
+        <div class="header-right">
+            <div class="icon-circle" id="toggleBalance">
+                <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+            <div class="icon-circle" id="notificationBtn" style="position: relative;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="notificationBadge">4</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="notifications-modal" id="notificationsModal">
+        <div class="notifications-content">
+            <div class="notifications-header">
+                <div class="notifications-title">Notificações</div>
+                <div class="close-notifications" id="closeNotifications">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="notifications-list" id="notificationsList">
+                <div class="notification-item unread" data-read="false">
+                    <div class="notification-icon icon-warning">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Você está 8% acima do orçamento de Transporte este mês</div>
+                        <div class="notification-time">Há 2 horas</div>
+                    </div>
+                    <div class="notification-dot"></div>
+                </div>
+
+                <div class="notification-item unread" data-read="false">
+                    <div class="notification-icon icon-transaction">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Pagamento de Netflix realizado - R$ 55,90</div>
+                        <div class="notification-time">Há 5 horas</div>
+                    </div>
+                    <div class="notification-dot"></div>
+                </div>
+
+                <div class="notification-item unread" data-read="false">
+                    <div class="notification-icon icon-goal">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="6"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Faltam apenas R$ 1.500 para completar seu objetivo "Reserva de Emergência"</div>
+                        <div class="notification-time">Ontem</div>
+                    </div>
+                    <div class="notification-dot"></div>
+                </div>
+
+                <div class="notification-item unread" data-read="false">
+                    <div class="notification-icon icon-transaction">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Transferência recebida de João Silva - R$ 250,00</div>
+                        <div class="notification-time">Ontem</div>
+                    </div>
+                    <div class="notification-dot"></div>
+                </div>
+
+                <div class="notification-item" data-read="true">
+                    <div class="notification-icon icon-budget">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Sua taxa de economia está 15% acima da meta mensal!</div>
+                        <div class="notification-time">Há 2 dias</div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-read="true">
+                    <div class="notification-icon icon-warning">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">Conta de Luz vence em 3 dias - R$ 185,40</div>
+                        <div class="notification-time">Há 2 dias</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notifications-footer">
+                <button class="mark-all-read" id="markAllRead">Marcar como lidas</button>
+                <a href="pop_notificacoes.html" class="view-all-notifications">Ver todas</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance -->
+    <div class="balance-card">
+        <div class="balance-label">SALDO DISPONÍVEL</div>
+        <div class="balance-amount" id="balanceAmount">R$ 0,00</div>
+    </div>
+
+    <!-- Functions -->
+    <div class="section-title">FUNÇÕES PRINCIPAIS</div>
+    <div class="grid">
+        <a href="pop_pix.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </div>
+            <div class="card-text">MENU PIX</div>
+        </a>
+        <a href="#" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <rect x="7" y="7" width="3" height="3"></rect>
+                    <rect x="14" y="7" width="3" height="3"></rect>
+                    <rect x="7" y="14" width="3" height="3"></rect>
+                    <rect x="14" y="14" width="3" height="3"></rect>
+                </svg>
+            </div>
+            <div class="card-text">PAGAR QR<br>CODE</div>
+        </a>
+        <a href="pop_pix_copia_cola.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+            </div>
+            <div class="card-text">COPIA E COLA</div>
+        </a>
+        <a href="pop_pix_com_chave.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                </svg>
+            </div>
+            <div class="card-text">COM CHAVE</div>
+        </a>
+        <a href="pop_favorecidos.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div class="card-text">FAVORECIDOS</div>
+        </a>
+        <a href="pop_agendados.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <div class="card-text">TRANSAÇÕES<br>AGENDADAS</div>
+        </a>
+        <a href="#" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="card-text">BOLETO</div>
+        </a>
+        <a href="pop_nova_transacao_pix.html" class="card">
+            <div class="card-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="card-text">TRANSFERIR</div>
+        </a>
+        <a href="pop_controle.html" class="card card-wide">
+            <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+            </div>
+            <div class="card-text">CONTROLE DE GASTOS</div>
+        </a>
+    </div>
+
+    <!-- Health Card -->
+    <a href="pop_saude.html" class="health-card">
+        <div class="health-header">
+            <div class="health-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+            </div>
+            <div class="health-title">SAÚDE FINANCEIRA</div>
+            <div class="health-score">85</div>
+        </div>
+        <div class="health-preview">
+            Sua pontuação está boa! Continue economizando e seus objetivos serão alcançados mais rápido.
+        </div>
+        <div class="health-footer">
+            <div class="health-tips">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v1m0 18v1M4.22 4.22l.707.707m12.728 12.728l.707.707M2 12h1m18 0h1M4.22 19.78l.707-.707m12.728-12.728l.707-.707"></path>
+                    <circle cx="12" cy="12" r="5"></circle>
+                </svg>
+                <span>3 dicas personalizadas</span>
+            </div>
+            <div class="health-arrow">→</div>
+        </div>
+    </a>
+
+    <!-- Transactions -->
+    <div class="transactions">
+        <div class="transactions-title">TRANSAÇÕES RECENTES</div>
+        <div class="empty-state">
+            <div class="empty-text">Nenhum dado encontrado</div>
+            <a href="pop_extrato.html" class="view-all">↗ EXTRATO COMPLETO</a>
+        </div>
+    </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="pop_home.html" class="nav-item active">
+            <div class="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div>Início</div>
+        </a>
+        <a href="pop_objetivos.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div>Objetivos</div>
+        </a>
+        <a href="pop_cartoes.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </div>
+            <div>Cartões</div>
+        </a>
+        <a href="pop_caixinhas.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div>Caixinhas</div>
+        </a>
+        <a href="pop_investir.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div>Investir</div>
+        </a>
+    </nav>
+</div>
+
+<script>
+    // Hide loader when page is fully loaded
+    window.addEventListener('load', function() {
+        const loader = document.getElementById('loader');
+        setTimeout(function() {
+            loader.classList.add('hidden');
+        }, 400); // Small delay to ensure smooth transition
+    });
+
+    // Toggle balance visibility
+    const toggleBtn = document.getElementById('toggleBalance');
+    const balanceAmount = document.getElementById('balanceAmount');
+    const eyeIcon = document.getElementById('eyeIcon');
+    let isBalanceVisible = true;
+    const originalBalance = balanceAmount.textContent;
+
+    toggleBtn.addEventListener('click', function() {
+        isBalanceVisible = !isBalanceVisible;
+
+        if (isBalanceVisible) {
+            // Show balance
+            balanceAmount.textContent = originalBalance;
+            eyeIcon.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            `;
+        } else {
+            // Hide balance
+            balanceAmount.textContent = '•••';
+            eyeIcon.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            `;
+        }
+    });
+
+    // Notifications functionality
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationsModal = document.getElementById('notificationsModal');
+    const closeNotifications = document.getElementById('closeNotifications');
+    const markAllRead = document.getElementById('markAllRead');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationItems = document.querySelectorAll('.notification-item');
+
+    // Update badge count
+    function updateBadgeCount() {
+        const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+        if (unreadCount > 0) {
+            notificationBadge.textContent = unreadCount;
+            notificationBadge.style.display = 'flex';
+        } else {
+            notificationBadge.style.display = 'none';
+        }
+    }
+
+    // Open notifications modal
+    notificationBtn.addEventListener('click', () => {
+        notificationsModal.classList.add('active');
+    });
+
+    // Close notifications modal
+    closeNotifications.addEventListener('click', () => {
+        notificationsModal.classList.remove('active');
+    });
+
+    // Close on background click
+    notificationsModal.addEventListener('click', (e) => {
+        if (e.target === notificationsModal) {
+            notificationsModal.classList.remove('active');
+        }
+    });
+
+    // Mark individual notification as read on click
+    notificationItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (item.classList.contains('unread')) {
+                item.classList.remove('unread');
+                item.dataset.read = 'true';
+                const dot = item.querySelector('.notification-dot');
+                if (dot) {
+                    dot.remove();
+                }
+                updateBadgeCount();
+            }
+        });
+    });
+
+    // Mark all as read
+    markAllRead.addEventListener('click', () => {
+        notificationItems.forEach(item => {
+            if (item.classList.contains('unread')) {
+                item.classList.remove('unread');
+                item.dataset.read = 'true';
+                const dot = item.querySelector('.notification-dot');
+                if (dot) {
+                    dot.remove();
+                }
+            }
+        });
+        updateBadgeCount();
+    });
+
+    // Initial badge count
+    updateBadgeCount();
+</script>
+</body>
+</html>

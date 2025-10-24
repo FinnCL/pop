@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: #EFEFEF; border-radius: 33px; overflow: hidden; position: relative; }
+        .content-wrapper { width: 100%; height: 100%; overflow-y: scroll; overflow-x: hidden; padding-bottom: 80px; box-sizing: border-box; }
+        .content-wrapper::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* Header */
+        .header { position: sticky; top: 0; background: #C83E3E; padding: 26px 12px; display: flex; align-items: center; gap: 12px; border-radius: 33px 33px 0 0; z-index: 200; }
+        .back-btn { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .header-title { color: white; font-size: 16px; font-weight: 600; flex: 1; }
+        .mark-all-btn { width: 26px; height: 26px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: background 0.2s; }
+        .mark-all-btn:hover { background: rgba(255,255,255,0.35); }
+
+        /* Filters */
+        .filters-bar { background: white; padding: 10px; display: flex; gap: 4px; overflow-x: auto; }
+        .filters-bar::-webkit-scrollbar { display: none; }
+        .filter-chip { padding: 5px 8px; border-radius: 14px; font-size: 9px; font-weight: 600; background: #F5F5F5; color: #666; border: none; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+        .filter-chip.active { background: #C83E3E; color: white; }
+        .filter-chip:hover { transform: translateY(-1px); }
+
+        /* Date Groups */
+        .date-group { padding: 12px 10px 6px 10px; font-size: 11px; font-weight: 600; color: #000; letter-spacing: 0.3px; }
+
+        /* Notification Items */
+        .notification-item { background: white; margin: 0 10px 1px 10px; padding: 14px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: background 0.2s; position: relative; }
+        .notification-item:first-of-type { border-radius: 10px 10px 0 0; }
+        .notification-item:last-of-type { border-radius: 0 0 10px 10px; margin-bottom: 10px; }
+        .notification-item:only-child { border-radius: 10px; }
+        .notification-item:hover { background: #FAFAFA; }
+        .notification-item.unread { background: #FFF9F5; }
+        .notification-item.unread::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #C83E3E; border-radius: 0 3px 3px 0; }
+
+        .notification-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .icon-transaction { background: #E8F5E9; }
+        .icon-budget { background: #FFF3E0; }
+        .icon-goal { background: #E3F2FD; }
+        .icon-warning { background: #FFEBEE; }
+
+        .notification-content { flex: 1; min-width: 0; }
+        .notification-text { font-size: 13px; color: #333; line-height: 1.4; margin-bottom: 4px; }
+        .notification-time { font-size: 11px; color: #999; }
+
+        .notification-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+        .notification-dot { width: 8px; height: 8px; border-radius: 50%; background: #C83E3E; flex-shrink: 0; }
+        .delete-btn { width: 24px; height: 24px; border-radius: 50%; background: #FFEBEE; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .delete-btn:hover { background: #F44336; }
+        .delete-btn:hover svg { stroke: white; }
+
+        /* Notifications List */
+        #notificationsList { margin-bottom: 20px; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+        .empty-text { font-size: 14px; color: #666; margin-bottom: 4px; }
+        .empty-subtext { font-size: 12px; color: #999; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #C83E3E; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 10px 0; border-radius: 0 0 33px 33px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; color: rgba(255, 255, 255, 0.7); font-size: 8px; text-decoration: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.25); color: white; }
+        .nav-item.active { color: white; }
+        .nav-icon { font-size: 18px; }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <div class="content-wrapper">
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">Notificações</div>
+        <div class="mark-all-btn" id="markAllBtn" title="Marcar todas como lidas">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+        <button class="filter-chip active" data-filter="todas">Todas</button>
+        <button class="filter-chip" data-filter="transacao">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Transações
+        </button>
+        <button class="filter-chip" data-filter="orcamento">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            Orçamento
+        </button>
+        <button class="filter-chip" data-filter="objetivo">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+            Objetivos
+        </button>
+        <button class="filter-chip" data-filter="aviso">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            Avisos
+        </button>
+    </div>
+
+    <!-- Notifications List -->
+    <div id="notificationsList">
+        <!-- HOJE -->
+        <div class="date-group">HOJE - 23 JAN</div>
+        <div class="notification-item unread" data-category="aviso">
+            <div class="notification-icon icon-warning"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+            <div class="notification-content">
+                <div class="notification-text">Você está 8% acima do orçamento de Transporte este mês</div>
+                <div class="notification-time">Há 2 horas</div>
+            </div>
+            <div class="notification-actions">
+                <div class="notification-dot"></div>
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-item unread" data-category="transacao">
+            <div class="notification-icon icon-transaction">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Pagamento de Netflix realizado - R$ 55,90</div>
+                <div class="notification-time">Há 5 horas</div>
+            </div>
+            <div class="notification-actions">
+                <div class="notification-dot"></div>
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONTEM -->
+        <div class="date-group">ONTEM - 22 JAN</div>
+        <div class="notification-item unread" data-category="objetivo">
+            <div class="notification-icon icon-goal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Faltam apenas R$ 1.500 para completar seu objetivo "Reserva de Emergência"</div>
+                <div class="notification-time">Ontem às 18:00</div>
+            </div>
+            <div class="notification-actions">
+                <div class="notification-dot"></div>
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-item unread" data-category="transacao">
+            <div class="notification-icon icon-transaction">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Transferência recebida de João Silva - R$ 250,00</div>
+                <div class="notification-time">Ontem às 14:30</div>
+            </div>
+            <div class="notification-actions">
+                <div class="notification-dot"></div>
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- HÁ 2 DIAS -->
+        <div class="date-group">21 JAN</div>
+        <div class="notification-item" data-category="orcamento">
+            <div class="notification-icon icon-budget">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Sua taxa de economia está 15% acima da meta mensal!</div>
+                <div class="notification-time">Há 2 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-item" data-category="aviso">
+            <div class="notification-icon icon-warning"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+            <div class="notification-content">
+                <div class="notification-text">Conta de Luz vence em 3 dias - R$ 185,40</div>
+                <div class="notification-time">Há 2 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- HÁ 3 DIAS -->
+        <div class="date-group">20 JAN</div>
+        <div class="notification-item" data-category="transacao">
+            <div class="notification-icon icon-transaction">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Compra no Supermercado Extra - R$ 245,80</div>
+                <div class="notification-time">Há 3 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-item" data-category="objetivo">
+            <div class="notification-icon icon-goal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Você alcançou 70% do seu objetivo "Viagem para Portugal"</div>
+                <div class="notification-time">Há 3 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- HÁ 5 DIAS -->
+        <div class="date-group">18 JAN</div>
+        <div class="notification-item" data-category="transacao">
+            <div class="notification-icon icon-transaction">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="notification-content">
+                <div class="notification-text">Abastecimento Posto Ipiranga - R$ 280,00</div>
+                <div class="notification-time">Há 5 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification-item" data-category="aviso">
+            <div class="notification-icon icon-warning"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+            <div class="notification-content">
+                <div class="notification-text">Gastos com Alimentação atingiram 90% do orçamento</div>
+                <div class="notification-time">Há 5 dias</div>
+            </div>
+            <div class="notification-actions">
+                <div class="delete-btn" title="Excluir">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State (hidden by default, shown when no notifications match filter) -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+        </div>
+        <div class="empty-text">Nenhuma notificação encontrada</div>
+        <div class="empty-subtext">Tente outro filtro</div>
+    </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="pop_home.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div>Início</div>
+        </a>
+        <a href="pop_objetivos.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div>Objetivos</div>
+        </a>
+        <a href="pop_cartoes.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </div>
+            <div>Cartões</div>
+        </a>
+        <a href="pop_caixinhas.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div>Caixinhas</div>
+        </a>
+        <a href="pop_investir.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div>Investir</div>
+        </a>
+    </nav>
+</div>
+
+<script>
+// Filter functionality
+const filterChips = document.querySelectorAll('.filter-chip');
+const notificationItems = document.querySelectorAll('.notification-item');
+const dateGroups = document.querySelectorAll('.date-group');
+const emptyState = document.getElementById('emptyState');
+const notificationsList = document.getElementById('notificationsList');
+
+filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        // Update active state
+        filterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+
+        const filter = chip.dataset.filter;
+        let visibleCount = 0;
+
+        // Filter notifications
+        notificationItems.forEach(item => {
+            const category = item.dataset.category;
+
+            if (filter === 'todas' || category === filter) {
+                item.style.display = '';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Show/hide date groups based on visible notifications
+        dateGroups.forEach(group => {
+            const nextElement = group.nextElementSibling;
+            let hasVisibleItems = false;
+
+            // Check if any notification in this group is visible
+            let element = nextElement;
+            while (element && !element.classList.contains('date-group')) {
+                if (element.classList.contains('notification-item') && element.style.display !== 'none') {
+                    hasVisibleItems = true;
+                    break;
+                }
+                element = element.nextElementSibling;
+            }
+
+            group.style.display = hasVisibleItems ? '' : 'none';
+        });
+
+        // Show empty state if no notifications visible
+        if (visibleCount === 0) {
+            notificationsList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            notificationsList.style.display = 'block';
+            emptyState.style.display = 'none';
+        }
+    });
+});
+
+// Mark all as read
+const markAllBtn = document.getElementById('markAllBtn');
+markAllBtn.addEventListener('click', () => {
+    notificationItems.forEach(item => {
+        if (item.classList.contains('unread')) {
+            item.classList.remove('unread');
+            const dot = item.querySelector('.notification-dot');
+            if (dot) {
+                dot.remove();
+            }
+        }
+    });
+});
+
+// Mark individual as read on click
+notificationItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+        // Don't mark as read if clicking delete button
+        if (e.target.closest('.delete-btn')) return;
+
+        if (item.classList.contains('unread')) {
+            item.classList.remove('unread');
+            const dot = item.querySelector('.notification-dot');
+            if (dot) {
+                dot.remove();
+            }
+        }
+    });
+});
+
+// Delete notification
+const deleteButtons = document.querySelectorAll('.delete-btn');
+deleteButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const item = btn.closest('.notification-item');
+
+        // Animate out
+        item.style.transform = 'translateX(100%)';
+        item.style.opacity = '0';
+        item.style.transition = 'all 0.3s ease';
+
+        setTimeout(() => {
+            const dateGroup = item.previousElementSibling;
+            item.remove();
+
+            // Remove date group if no more items
+            if (dateGroup && dateGroup.classList.contains('date-group')) {
+                const nextElement = dateGroup.nextElementSibling;
+                if (!nextElement || nextElement.classList.contains('date-group')) {
+                    dateGroup.remove();
+                }
+            }
+
+            // Check if list is empty
+            const remainingItems = document.querySelectorAll('.notification-item');
+            if (remainingItems.length === 0) {
+                notificationsList.style.display = 'none';
+                emptyState.style.display = 'block';
+                emptyState.querySelector('.empty-text').textContent = 'Nenhuma notificação';
+                emptyState.querySelector('.empty-subtext').textContent = 'Você está em dia!';
+            }
+        }, 300);
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: #EFEFEF; border-radius: 33px; overflow: hidden; position: relative; }
+        .content-wrapper { width: 100%; height: 100%; overflow-y: scroll; overflow-x: hidden; padding-bottom: 50px; box-sizing: border-box; }
+        .content-wrapper::-webkit-scrollbar { width: 0px; background: transparent; }
+        .header { position: sticky; top: 0; background: #C83E3E; padding: 26px 12px; display: flex; align-items: center; gap: 12px; border-radius: 33px 33px 0 0; z-index: 200; }
+        .back-btn { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .header-title { color: white; font-size: 16px; font-weight: 600; flex: 1; }
+        .profile-header { background: linear-gradient(135deg, #C83E3E 0%, #E85D5D 100%); padding: 30px 20px; text-align: center; color: white; }
+        .profile-avatar { width: 80px; height: 80px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; border: 3px solid white; overflow: hidden; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; image-rendering: -webkit-optimize-contrast; image-rendering: high-quality; backface-visibility: hidden; transform: translateZ(0); -webkit-font-smoothing: antialiased; }
+        .profile-name { font-size: 20px; font-weight: 600; margin-bottom: 5px; }
+        .profile-email { font-size: 12px; opacity: 0.9; }
+        .section-title { padding: 0 10px; font-size: 11px; font-weight: 600; color: #000; margin: 15px 0 8px; letter-spacing: 0.2px; }
+        .card { background: white; margin: 10px; padding: 12px; border-radius: 10px; }
+        .menu-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-icon { width: 35px; display: flex; align-items: center; justify-content: center; color: #666; }
+        .menu-text { flex: 1; }
+        .menu-label { font-size: 13px; font-weight: 500; color: #000; margin-bottom: 2px; }
+        .menu-desc { font-size: 10px; color: #999; }
+        .menu-arrow { color: #CCC; font-size: 16px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-size: 11px; color: #666; }
+        .info-value { font-size: 12px; font-weight: 600; color: #000; }
+        .btn-logout { background: #F44336; color: white; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; margin: 10px 10px 25px 10px; text-decoration: none; display: block; }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #C83E3E; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 10px 0; border-radius: 0 0 33px 33px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; color: rgba(255, 255, 255, 0.7); font-size: 8px; text-decoration: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.25); color: white; }
+        .nav-item.active { color: white; }
+        .nav-icon { font-size: 18px; }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <div class="content-wrapper">
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">Meu Perfil</div>
+        <div style="width: 24px;"></div>
+    </div>
+
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <img src="finn_avatar.jpg" alt="Finn">
+        </div>
+        <div class="profile-name">Finn</div>
+        <div class="profile-email">finn@email.com</div>
+    </div>
+
+    <div class="section-title">INFORMAÇÕES PESSOAIS</div>
+    <div class="card">
+        <div class="info-row">
+            <div class="info-label">CPF</div>
+            <div class="info-value">***.456.789-**</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Data de Nascimento</div>
+            <div class="info-value">15/03/1990</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Telefone</div>
+            <div class="info-value">(11) 98765-4321</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Endereço</div>
+            <div class="info-value">São Paulo, SP</div>
+        </div>
+    </div>
+
+    <div class="section-title">CONFIGURAÇÕES</div>
+    <div class="card">
+        <div class="menu-item">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+            </div>
+            <div class="menu-text">
+                <div class="menu-label">Notificações</div>
+                <div class="menu-desc">Configure suas preferências</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <div class="menu-text">
+                <div class="menu-label">Segurança</div>
+                <div class="menu-desc">Senha e autenticação</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+            </div>
+            <div class="menu-text">
+                <div class="menu-label">Preferências</div>
+                <div class="menu-desc">Personalização do app</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </div>
+    </div>
+
+    <div class="section-title">SUPORTE</div>
+    <div class="card">
+        <div class="menu-item">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <div class="menu-text">
+                <div class="menu-label">Central de Ajuda</div>
+                <div class="menu-desc">Dúvidas e suporte</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </div>
+        <div class="menu-item">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="menu-text">
+                <div class="menu-label">Termos de Uso</div>
+                <div class="menu-desc">Políticas e privacidade</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </div>
+    </div>
+
+    <a href="#" class="btn-logout">SAIR DA CONTA</a>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="pop_home.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div>Início</div>
+        </a>
+        <a href="pop_objetivos.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div>Objetivos</div>
+        </a>
+        <a href="pop_cartoes.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </div>
+            <div>Cartões</div>
+        </a>
+        <a href="pop_caixinhas.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div>Caixinhas</div>
+        </a>
+        <a href="pop_investir.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div>Investir</div>
+        </a>
+    </nav>
+</div>
+</body>
+</html>

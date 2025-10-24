@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Transação PIX</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: #FFFFFF; border-radius: 33px; overflow: hidden; position: relative; }
+        .content-wrapper { width: 100%; height: 100%; overflow-y: scroll; overflow-x: hidden; padding-bottom: 50px; box-sizing: border-box; }
+        .content-wrapper::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* Header */
+        .header { position: sticky; top: 0; background: white; padding: 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #F0F0F0; z-index: 200; }
+        .back-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #000; text-decoration: none; }
+        .header-title { color: #000; font-size: 16px; font-weight: 700; flex: 1; text-align: center; letter-spacing: 0.5px; }
+        .info-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #000; }
+
+        /* Menu Items */
+        .menu-list { padding: 0; }
+        .menu-item { display: flex; align-items: center; padding: 20px 16px; border-bottom: 1px solid #F0F0F0; text-decoration: none; transition: background 0.2s; }
+        .menu-item:hover { background: #FAFAFA; }
+        .menu-icon { width: 50px; display: flex; align-items: center; justify-content: center; }
+        .menu-content { flex: 1; }
+        .menu-title { font-size: 15px; font-weight: 400; color: #000; margin-bottom: 3px; }
+        .menu-subtitle { font-size: 12px; color: #C83E3E; font-weight: 400; }
+        .menu-arrow { color: #C83E3E; font-size: 20px; font-weight: 300; }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <div class="content-wrapper">
+    <!-- Header -->
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">NOVA TRANSAÇÃO PIX</div>
+        <div class="info-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Menu Items -->
+    <div class="menu-list">
+        <a href="pop_pix_com_chave.html" class="menu-item">
+            <div class="menu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                </svg>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">Pix com Chave</div>
+                <div class="menu-subtitle">Inserir manualmente a chave Pix</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </a>
+
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <rect x="7" y="7" width="3" height="3"></rect>
+                    <rect x="14" y="7" width="3" height="3"></rect>
+                    <rect x="7" y="14" width="3" height="3"></rect>
+                    <rect x="14" y="14" width="3" height="3"></rect>
+                </svg>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">Pix com QRCode</div>
+                <div class="menu-subtitle">Realizar leitura de código QRCode</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </a>
+
+        <a href="pop_pix_copia_cola.html" class="menu-item">
+            <div class="menu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">Pix Copia e Cola</div>
+                <div class="menu-subtitle">Inserir código de pagamento</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </a>
+
+        <a href="#" class="menu-item">
+            <div class="menu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                    <polyline points="17 2 12 7 7 2"></polyline>
+                </svg>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">Pix Digitado</div>
+                <div class="menu-subtitle">Inserir manualmente as informações da conta</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </a>
+
+        <a href="pop_favorecidos.html" class="menu-item">
+            <div class="menu-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div class="menu-content">
+                <div class="menu-title">Pix com Favorecido</div>
+                <div class="menu-subtitle">Selecionar um favorecido cadastrado</div>
+            </div>
+            <div class="menu-arrow">›</div>
+        </a>
+    </div>
+    </div>
+</div>
+</body>
+</html>

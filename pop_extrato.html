@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato Completo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: #EFEFEF; border-radius: 33px; overflow: hidden; position: relative; }
+        .content-wrapper { width: 100%; height: 100%; overflow-y: scroll; overflow-x: hidden; padding-bottom: 50px; box-sizing: border-box; }
+        .content-wrapper::-webkit-scrollbar { width: 0px; background: transparent; }
+        .header { position: sticky; top: 0; background: #C83E3E; padding: 26px 12px; display: flex; align-items: center; gap: 12px; border-radius: 33px 33px 0 0; z-index: 200; }
+        .back-btn { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .header-title { color: white; font-size: 16px; font-weight: 600; flex: 1; }
+        .filter-btn {
+            width: 26px;
+            height: 26px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .filter-btn:hover { background: rgba(255,255,255,0.35); }
+        .balance-summary { background: white; margin: 10px; padding: 15px; border-radius: 10px; }
+        .balance-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .balance-label { font-size: 11px; color: #666; }
+        .balance-value { font-size: 16px; font-weight: 600; }
+        .value-positive { color: #4CAF50; }
+        .value-negative { color: #F44336; }
+        .period-selector { background: white; margin: 10px; padding: 10px; border-radius: 10px; display: flex; gap: 6px; }
+        .period-btn { flex: 1; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-align: center; background: #F5F5F5; color: #666; border: none; cursor: pointer; }
+        .period-btn.active { background: #C83E3E; color: white; }
+        .date-group { margin: 15px 10px 8px; font-size: 11px; font-weight: 600; color: #000; }
+        .transaction-card { background: white; margin: 0 10px 1px 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .transaction-card:first-of-type { border-radius: 10px 10px 0 0; }
+        .transaction-card:last-of-type { border-radius: 0 0 10px 10px; margin-bottom: 10px; }
+        .transaction-icon { width: 38px; height: 38px; background: #F5F5F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .transaction-details { flex: 1; min-width: 0; }
+        .transaction-name { font-size: 12px; font-weight: 500; color: #000; margin-bottom: 2px; }
+        .transaction-category { font-size: 10px; color: #999; }
+        .transaction-amount { display: flex; flex-direction: column; align-items: flex-end; }
+        .transaction-value { font-size: 14px; font-weight: 600; }
+        .transaction-time { font-size: 9px; color: #999; margin-top: 2px; }
+        /* Filter Modal */
+        .filter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            border-radius: 33px;
+        }
+        .filter-modal.active { display: flex; }
+        .filter-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            width: 85%;
+            max-width: 350px;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #EFEFEF;
+        }
+        .filter-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+        .close-filter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #F5F5F5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .close-filter:hover { background: #E0E0E0; }
+        .filter-section { margin-bottom: 20px; }
+        .filter-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 5px;
+        }
+        .filter-option:hover { background: #F5F5F5; }
+        .filter-option.selected {
+            background: rgba(200, 62, 62, 0.1);
+            border: 1px solid #C83E3E;
+        }
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #CCC;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .filter-option.selected .filter-checkbox {
+            background: #C83E3E;
+            border-color: #C83E3E;
+        }
+        .filter-checkbox svg { display: none; }
+        .filter-option.selected .filter-checkbox svg { display: block; }
+        .filter-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #EFEFEF;
+        }
+        .filter-btn-clear {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #C83E3E;
+            background: white;
+            color: #C83E3E;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn-clear:hover { background: #FFF5F5; }
+        .filter-btn-apply {
+            flex: 1;
+            padding: 12px;
+            background: #C83E3E;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn-apply:hover { background: #B33636; }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #C83E3E; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 10px 0; border-radius: 0 0 33px 33px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; color: rgba(255, 255, 255, 0.7); font-size: 8px; text-decoration: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.25); color: white; }
+        .nav-item.active { color: white; }
+        .nav-icon { font-size: 18px; }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <div class="content-wrapper">
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">Extrato Completo</div>
+        <div class="filter-btn" id="filterBtn" title="Filtrar transações">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-header">
+                <div class="filter-title">Filtrar Transações</div>
+                <div class="close-filter" id="closeFilter">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-section-title">Tipo</div>
+                <div class="filter-option" data-filter="tipo" data-value="receita">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                        Receitas
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="tipo" data-value="despesa">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                        Despesas
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-section-title">Categoria</div>
+                <div class="filter-option" data-filter="categoria" data-value="alimentacao">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        Alimentação
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="categoria" data-value="transporte">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M16 3h3v5"></path>
+                            <path d="M8 9h8"></path>
+                            <circle cx="7" cy="19" r="2"></circle>
+                            <circle cx="17" cy="19" r="2"></circle>
+                        </svg>
+                        Transporte
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="categoria" data-value="moradia">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        Moradia
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="categoria" data-value="saude">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                        Saúde
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="categoria" data-value="lazer">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <line x1="6" y1="9" x2="6" y2="9.01"></line>
+                            <line x1="18" y1="9" x2="18" y2="9.01"></line>
+                            <path d="M15.5 9.4a4 4 0 1 0-7 0"></path>
+                            <rect x="5" y="3" width="14" height="8" rx="2"></rect>
+                        </svg>
+                        Lazer
+                    </div>
+                </div>
+                <div class="filter-option" data-filter="categoria" data-value="receita">
+                    <div class="filter-checkbox">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="filter-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                        Receita
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="filter-btn-clear" id="clearFilters">Limpar</button>
+                <button class="filter-btn-apply" id="applyFilters">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="balance-summary">
+        <div class="balance-row">
+            <div class="balance-label">Total de Entradas</div>
+            <div class="balance-value value-positive">+R$ 5.200,00</div>
+        </div>
+        <div class="balance-row">
+            <div class="balance-label">Total de Saídas</div>
+            <div class="balance-value value-negative">-R$ 3.450,00</div>
+        </div>
+        <div class="balance-row" style="padding-top: 10px; border-top: 1px solid #E0E0E0; margin-top: 8px;">
+            <div class="balance-label">Saldo do Período</div>
+            <div class="balance-value value-positive">+R$ 1.750,00</div>
+        </div>
+    </div>
+
+    <div class="period-selector">
+        <button class="period-btn">7 dias</button>
+        <button class="period-btn active">30 dias</button>
+        <button class="period-btn">3 meses</button>
+        <button class="period-btn">Ano</button>
+    </div>
+
+    <div class="date-group">HOJE - 23 JAN</div>
+    <div class="transaction-card" data-tipo="receita" data-categoria="receita">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Salário</div>
+            <div class="transaction-category">Receita</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-positive">+R$ 5.200,00</div>
+            <div class="transaction-time">08:00</div>
+        </div>
+    </div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="alimentacao">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Supermercado Extra</div>
+            <div class="transaction-category">Alimentação</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 245,80</div>
+            <div class="transaction-time">14:30</div>
+        </div>
+    </div>
+
+    <div class="date-group">ONTEM - 22 JAN</div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="alimentacao">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Restaurante Bella Pasta</div>
+            <div class="transaction-category">Alimentação</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 158,90</div>
+            <div class="transaction-time">20:15</div>
+        </div>
+    </div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="transporte">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3h3v5"></path>
+                <path d="M8 9h8"></path>
+                <path d="M2 12h6l3-9h4"></path>
+                <circle cx="7" cy="19" r="2"></circle>
+                <circle cx="17" cy="19" r="2"></circle>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Uber</div>
+            <div class="transaction-category">Transporte</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 32,50</div>
+            <div class="transaction-time">18:45</div>
+        </div>
+    </div>
+
+    <div class="date-group">20 JAN</div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="lazer">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Netflix</div>
+            <div class="transaction-category">Lazer</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 55,90</div>
+            <div class="transaction-time">08:00</div>
+        </div>
+    </div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="moradia">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Conta de Luz</div>
+            <div class="transaction-category">Moradia</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 185,40</div>
+            <div class="transaction-time">10:20</div>
+        </div>
+    </div>
+
+    <div class="date-group">18 JAN</div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="transporte">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3h3v5"></path>
+                <path d="M8 9h8"></path>
+                <path d="M2 12h6l3-9h4"></path>
+                <circle cx="7" cy="19" r="2"></circle>
+                <circle cx="17" cy="19" r="2"></circle>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Posto Ipiranga</div>
+            <div class="transaction-category">Transporte</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 280,00</div>
+            <div class="transaction-time">17:45</div>
+        </div>
+    </div>
+    <div class="transaction-card" data-tipo="despesa" data-categoria="saude">
+        <div class="transaction-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+        </div>
+        <div class="transaction-details">
+            <div class="transaction-name">Farmácia São Paulo</div>
+            <div class="transaction-category">Saúde</div>
+        </div>
+        <div class="transaction-amount">
+            <div class="transaction-value value-negative">-R$ 87,50</div>
+            <div class="transaction-time">12:30</div>
+        </div>
+    </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="pop_home.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div>Início</div>
+        </a>
+        <a href="pop_objetivos.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div>Objetivos</div>
+        </a>
+        <a href="pop_cartoes.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </div>
+            <div>Cartões</div>
+        </a>
+        <a href="pop_caixinhas.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div>Caixinhas</div>
+        </a>
+        <a href="pop_investir.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div>Investir</div>
+        </a>
+    </nav>
+</div>
+
+<script>
+// Filter modal functionality
+const filterBtn = document.getElementById('filterBtn');
+const filterModal = document.getElementById('filterModal');
+const closeFilter = document.getElementById('closeFilter');
+const clearFilters = document.getElementById('clearFilters');
+const applyFilters = document.getElementById('applyFilters');
+const filterOptions = document.querySelectorAll('.filter-option');
+const transactionCards = document.querySelectorAll('.transaction-card');
+
+// Open modal
+filterBtn.addEventListener('click', () => {
+    filterModal.classList.add('active');
+});
+
+// Close modal
+closeFilter.addEventListener('click', () => {
+    filterModal.classList.remove('active');
+});
+
+// Close on background click
+filterModal.addEventListener('click', (e) => {
+    if (e.target === filterModal) {
+        filterModal.classList.remove('active');
+    }
+});
+
+// Toggle filter options
+filterOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        option.classList.toggle('selected');
+    });
+});
+
+// Clear all filters
+clearFilters.addEventListener('click', () => {
+    filterOptions.forEach(option => {
+        option.classList.remove('selected');
+    });
+    // Show all transactions
+    transactionCards.forEach(card => {
+        card.style.display = '';
+    });
+});
+
+// Apply filters
+applyFilters.addEventListener('click', () => {
+    // Collect selected filters
+    const selectedFilters = {
+        tipos: [],
+        categorias: []
+    };
+
+    filterOptions.forEach(opt => {
+        if (opt.classList.contains('selected')) {
+            const filterType = opt.dataset.filter;
+            const filterValue = opt.dataset.value;
+
+            if (filterType === 'tipo') {
+                selectedFilters.tipos.push(filterValue);
+            } else if (filterType === 'categoria') {
+                selectedFilters.categorias.push(filterValue);
+            }
+        }
+    });
+
+    // Filter transactions based on selection
+    if (selectedFilters.tipos.length > 0 || selectedFilters.categorias.length > 0) {
+        transactionCards.forEach(card => {
+            let showCard = true;
+
+            const cardTipo = card.dataset.tipo;
+            const cardCategoria = card.dataset.categoria;
+
+            // Check tipo filter
+            if (selectedFilters.tipos.length > 0) {
+                if (!selectedFilters.tipos.includes(cardTipo)) {
+                    showCard = false;
+                }
+            }
+
+            // Check categoria filter
+            if (selectedFilters.categorias.length > 0 && showCard) {
+                if (!selectedFilters.categorias.includes(cardCategoria)) {
+                    showCard = false;
+                }
+            }
+
+            card.style.display = showCard ? '' : 'none';
+        });
+    } else {
+        // No filters selected, show all
+        transactionCards.forEach(card => {
+            card.style.display = '';
+        });
+    }
+
+    // Close modal
+    filterModal.classList.remove('active');
+});
+</script>
+</body>
+</html>

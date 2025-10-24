@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Favorecidos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: white; border-radius: 33px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+        /* Header */
+        .header { background: white; padding: 26px 12px; display: flex; align-items: center; gap: 12px; border-radius: 33px 33px 0 0; }
+        .back-btn { width: 32px; height: 32px; background: #F5F5F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #333; text-decoration: none; transition: background 0.2s; }
+        .back-btn:hover { background: #E0E0E0; }
+        .header-title { color: #000; font-size: 16px; font-weight: 700; flex: 1; text-align: center; }
+        .info-btn { width: 32px; height: 32px; background: #F5F5F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #333; cursor: pointer; transition: background 0.2s; }
+        .info-btn:hover { background: #E0E0E0; }
+
+        /* Content */
+        .content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .content::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        .empty-text { font-size: 14px; color: #999; margin-bottom: 40px; text-align: center; }
+        .empty-icon { margin: 0 auto; }
+
+        /* Bottom Button */
+        .bottom-action { padding: 15px 20px 20px 20px; background: white; }
+        .btn-primary { width: 100%; padding: 16px; background: #FF5733; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-primary:hover { background: #E04525; }
+        .btn-primary:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <!-- Header -->
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">MEUS FAVORECIDOS</div>
+        <div class="info-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="empty-text">Nenhum favorecido cadastrado</div>
+        <div class="empty-icon">
+            <svg width="160" height="160" viewBox="0 0 200 200" fill="none">
+                <circle cx="100" cy="100" r="80" fill="#F5F5F5"/>
+                <path d="M70 70 Q80 60, 90 70 T110 70" stroke="#999" stroke-width="3" fill="none"/>
+                <rect x="60" y="100" width="80" height="60" rx="5" fill="#E0E0E0"/>
+                <circle cx="100" cy="130" r="15" fill="white"/>
+                <path d="M93 125 L97 130 L107 120" stroke="#666" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <line x1="70" y1="115" x2="85" y2="115" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+                <line x1="70" y1="122" x2="82" y2="122" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+                <line x1="115" y1="115" x2="130" y2="115" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+                <line x1="115" y1="122" x2="127" y2="122" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Bottom Button -->
+    <div class="bottom-action">
+        <button class="btn-primary">Adicionar Favorecido</button>
+    </div>
+</div>
+</body>
+</html>

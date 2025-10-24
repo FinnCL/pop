@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixinhas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+        html { background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        body { background: #000; width: 414px; height: 90vh; max-height: 896px; box-shadow: 0 20px 60px rgba(0,0,0,0.9); border-radius: 45px; overflow: hidden; position: relative; border: 12px solid #2a2a2a; padding: 0; margin: 0; }
+        body::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 4px; background: #333; border-radius: 10px; z-index: 999; }
+        .phone-screen { width: 100%; height: 100%; background: #EFEFEF; border-radius: 33px; overflow: hidden; position: relative; }
+        .content-wrapper { width: 100%; height: 100%; overflow-y: scroll; overflow-x: hidden; padding-bottom: 50px; box-sizing: border-box; }
+        .content-wrapper::-webkit-scrollbar { width: 0px; background: transparent; }
+        .header { position: sticky; top: 0; background: #C83E3E; padding: 26px 12px; display: flex; align-items: center; gap: 12px; border-radius: 33px 33px 0 0; z-index: 200; }
+        .back-btn { width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.2s; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .header-title { color: white; font-size: 16px; font-weight: 600; flex: 1; }
+        .add-btn { color: white; font-size: 24px; cursor: pointer; transition: transform 0.2s; }
+        .add-btn:hover { transform: scale(1.1); }
+        .eye-btn { width: 26px; height: 26px; background: rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; transition: background 0.2s; }
+        .eye-btn:hover { background: rgba(255,255,255,0.35); }
+        .balance-card { background: white; margin: 10px; padding: 12px; border-radius: 10px; }
+        .balance-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .balance-label { font-size: 10px; color: #999; }
+        .balance-value { font-size: 16px; font-weight: 600; color: #000; }
+        .balance-total { border-top: 1px solid #E0E0E0; padding-top: 8px; margin-top: 8px; }
+        .card { background: white; margin: 10px; padding: 12px; border-radius: 10px; }
+        .caixa-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .caixa-left { display: flex; align-items: center; gap: 10px; }
+        .caixa-icon { font-size: 26px; }
+        .caixa-title { font-size: 13px; font-weight: 600; color: #000; }
+        .caixa-value { font-size: 20px; font-weight: 600; color: #000; }
+        .caixa-income { font-size: 10px; color: #4CAF50; margin-top: 4px; }
+        .buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 10px; }
+        .btn-sm { padding: 7px; border-radius: 6px; font-size: 10px; font-weight: 600; text-align: center; text-decoration: none; }
+        .btn-green { background: #4CAF50; color: white; }
+        .btn-orange { background: #FF9800; color: white; }
+        .btn-gray { background: #E0E0E0; color: #666; }
+        .info-box { background: #E3F2FD; padding: 10px; border-radius: 6px; margin: 10px; font-size: 10px; color: #1976D2; text-align: center; }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: #C83E3E; display: flex; justify-content: space-around; align-items: center; padding: 8px 0 10px 0; border-radius: 0 0 33px 33px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 1px; color: rgba(255, 255, 255, 0.7); font-size: 8px; text-decoration: none; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.25); color: white; }
+        .nav-item.active { color: white; }
+        .nav-icon { font-size: 18px; }
+    </style>
+</head>
+<body>
+<div class="phone-screen">
+    <div class="content-wrapper">
+    <div class="header">
+        <a href="pop_home.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <div class="header-title">Minhas Caixinhas</div>
+        <div style="display: flex; gap: 8px;">
+            <div class="eye-btn" id="toggleBalance">
+                <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+            <div class="add-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="balance-card">
+        <div class="balance-row">
+            <div class="balance-label">Saldo Principal</div>
+            <div class="balance-value balance-amount">R$ 2.450,00</div>
+        </div>
+        <div class="balance-row balance-total">
+            <div class="balance-label">Total em Caixinhas</div>
+            <div class="balance-value balance-amount" style="color: #4CAF50;">R$ 8.700,00</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="caixa-header">
+            <div class="caixa-left">
+                <div class="caixa-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="caixa-title">RESERVA DE EMERGÊNCIA</div>
+                    <div class="caixa-income">+R$ 45,20 este mês</div>
+                </div>
+            </div>
+        </div>
+        <div class="caixa-value">R$ 3.500,00</div>
+        <div class="buttons">
+            <a href="#" class="btn-sm btn-green">Adicionar</a>
+            <a href="#" class="btn-sm btn-orange">Resgatar</a>
+            <a href="#" class="btn-sm btn-gray">Editar</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="caixa-header">
+            <div class="caixa-left">
+                <div class="caixa-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <path d="M16 11l2 2 4-4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="caixa-title">PRESENTES DE NATAL</div>
+                    <div class="caixa-income">+R$ 28,60 este mês</div>
+                </div>
+            </div>
+        </div>
+        <div class="caixa-value">R$ 2.200,00</div>
+        <div class="buttons">
+            <a href="#" class="btn-sm btn-green">Adicionar</a>
+            <a href="#" class="btn-sm btn-orange">Resgatar</a>
+            <a href="#" class="btn-sm btn-gray">Editar</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="caixa-header">
+            <div class="caixa-left">
+                <div class="caixa-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="caixa-title">CASAMENTO</div>
+                    <div class="caixa-income">+R$ 39,00 este mês</div>
+                </div>
+            </div>
+        </div>
+        <div class="caixa-value">R$ 3.000,00</div>
+        <div class="buttons">
+            <a href="#" class="btn-sm btn-green">Adicionar</a>
+            <a href="#" class="btn-sm btn-orange">Resgatar</a>
+            <a href="#" class="btn-sm btn-gray">Editar</a>
+        </div>
+    </div>
+
+    <div class="info-box">Suas caixinhas rendem 100% do CDI automaticamente</div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="pop_home.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div>Início</div>
+        </a>
+        <a href="pop_objetivos.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <div>Objetivos</div>
+        </a>
+        <a href="pop_cartoes.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </div>
+            <div>Cartões</div>
+        </a>
+        <a href="pop_caixinhas.html" class="nav-item active">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div>Caixinhas</div>
+        </a>
+        <a href="pop_investir.html" class="nav-item">
+            <div class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div>Investir</div>
+        </a>
+    </nav>
+</div>
+
+<script>
+    // Toggle balance visibility
+    const toggleBtn = document.getElementById('toggleBalance');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const balanceAmounts = document.querySelectorAll('.balance-amount');
+    let isBalanceVisible = true;
+    const originalBalances = Array.from(balanceAmounts).map(el => el.textContent);
+
+    toggleBtn.addEventListener('click', function() {
+        isBalanceVisible = !isBalanceVisible;
+
+        if (isBalanceVisible) {
+            // Show balances
+            balanceAmounts.forEach((el, index) => {
+                el.textContent = originalBalances[index];
+            });
+            eyeIcon.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            `;
+        } else {
+            // Hide balances
+            balanceAmounts.forEach(el => {
+                el.textContent = '•••';
+            });
+            eyeIcon.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            `;
+        }
+    });
+</script>
+</body>
+</html>
